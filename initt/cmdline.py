@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 from typing import Dict, List, Any, Union
 import click
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
@@ -34,6 +35,7 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
         "params": [
             {"type": "text", "name": "project_name", "message": "What is your project named?", "default": "my-app"}
         ],
+        "hook": ["yarn install && yarn upgrade --latest && yarn start"],
     },
     "swift": {
         "project": [
@@ -75,6 +77,7 @@ class Logger:
         "file": "📝",
         "directory": "📁",
         "start": "🚀",
+        "hook": "🔄",
     }
 
     @staticmethod
@@ -106,6 +109,10 @@ class Logger:
     @classmethod
     def directory(cls, path: str) -> None:
         cls.log("directory", "Directory", f"Created: {path}")
+
+    @classmethod
+    def hook(cls, command: str) -> None:
+        cls.log("hook", "Hook", f"Executing: {command}")
 
 
 class TemplateRenderer:
@@ -199,6 +206,60 @@ class ProjectCreator:
             Logger.error("Error", f"Failed to create file: {path} - {str(e)}")
             return False
 
+    def execute_hooks(self, base_path: str, context: dict) -> bool:
+        """Execute post-creation hooks
+
+        Args:
+            base_path: Project base path
+            context: Template context
+
+        Returns:
+            bool: Whether all hooks executed successfully
+        """
+        hooks = self.template_config.get("hook", [])
+        if not hooks:
+            return True
+
+        Logger.info("Hooks", f"Executing {len(hooks)} post-creation hook(s)")
+
+        success = True
+        original_dir = os.getcwd()
+
+        try:
+            # Change to project directory to execute hooks
+            os.chdir(base_path)
+
+            for hook in hooks:
+                try:
+                    # Format variables in hook command if needed
+                    command = hook.format(**context)
+                    Logger.hook(command)
+
+                    # Execute the hook command
+                    result = subprocess.run(command, shell=True, capture_output=True, text=True, check=False)
+
+                    if result.returncode == 0:
+                        Logger.success("Hook", f"Command executed successfully: {command}")
+                        if result.stdout.strip():
+                            click.echo(result.stdout.strip())
+                    else:
+                        Logger.error("Hook", f"Command failed with exit code {result.returncode}: {command}")
+                        if result.stderr.strip():
+                            click.echo(result.stderr.strip())
+                        success = False
+
+                except KeyError as ke:
+                    Logger.error("Hook", f"Missing required parameter {ke} for hook: {hook}")
+                    success = False
+                except Exception as e:
+                    Logger.error("Hook", f"Failed to execute hook command: {hook} - {str(e)}")
+                    success = False
+        finally:
+            # Restore original directory
+            os.chdir(original_dir)
+
+        return success
+
     def create_project(self, base_path: str, context: dict) -> bool:
         """Create project structure and files
 
@@ -232,8 +293,17 @@ class ProjectCreator:
                 except Exception as e:
                     Logger.error("Create", f"Error processing project item {item}: {str(e)}")
 
+            # Check project creation success
+            project_success = success_count > 0
+
+            # Execute hooks if project was created successfully
+            if project_success:
+                hooks_success = self.execute_hooks(base_path, context)
+                if not hooks_success:
+                    Logger.warning("Hooks", "Some hooks failed to execute")
+
             # Return success if there were any successful project items
-            return success_count > 0
+            return project_success
 
         except Exception as e:
             Logger.error("Project", f"Failed to create project: {str(e)}")
