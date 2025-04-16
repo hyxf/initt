@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    // 开启严格模式，激活所有严格类型检查选项，增强类型安全
+    "strict": true,
+    // 启用实验性的装饰器语法（如类装饰器、属性装饰器等）
+    "experimentalDecorators": true,
+    // 使用 Node.js 的模块系统，适配 ESM 环境（支持 .ts/.js/.mjs/.cjs）
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    // 设置编译目标为 ES2022，支持更现代的 JS 特性（如 top-level await）
+    "target": "ES2022",
+    // 编译时使用 ES2022 标准库的类型定义
+    "lib": [
+      "ES2022"
+    ],
+    // 指定源码根目录，提升路径清晰度
+    "rootDir": "src",
+    // 指定输出目录，便于打包和部署
+    "outDir": "dist",
+    // 生成 source map，便于调试映射到源代码
+    "sourceMap": true,
+    // 允许通过 `import fs from 'fs'` 形式兼容 CommonJS 模块
+    "esModuleInterop": true,
+    // 允许导入 `.json` 文件，常用于配置或 mock 数据
+    "resolveJsonModule": true,
+    // 强制文件名大小写一致，避免跨平台文件路径问题（如 Windows vs Unix）
+    "forceConsistentCasingInFileNames": true,
+    // 跳过 node_modules 中类型检查，加速编译
+    "skipLibCheck": true,
+    // 允许使用 `import foo from 'bar'` 即使 `bar` 是 CommonJS 默认导出
+    "allowSyntheticDefaultImports": true,
+    // 编译报错时不生成输出文件，防止部署错误代码
+    "noEmitOnError": true,
+    // 严格区分 null / undefined 与其他类型（可显式写出来）
+    "strictNullChecks": true
+  },
+  "include": [
+    // 仅包含 src 目录，提升编译效率
+    "src"
+  ],
+  "exclude": [
+    // 排除 node_modules 和 dist 目录，避免无效编译
+    "node_modules",
+    "dist"
+  ]
+}
