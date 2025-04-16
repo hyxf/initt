@@ -7,7 +7,7 @@ from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
 import questionary
 
-__VERSION__ = "0.0.2"
+__VERSION__ = "0.0.3"
 
 # Template configuration structured definition
 TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
