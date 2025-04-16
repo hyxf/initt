@@ -2,12 +2,34 @@ import os
 import sys
 import subprocess
 from typing import Dict, List, Any, Union
+import venv
 import click
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
 import questionary
 
 __VERSION__ = "0.0.3"
+
+
+def hook_setup_virtualenv(base_path: str, context: dict):
+    Logger.info("VEnv", f"Setting up virtual environment at {base_path}")
+
+    venv_path = os.path.join(base_path, ".venv")
+    if os.path.exists(venv_path):
+        Logger.info("VEnv", f"Virtual environment already exists at {venv_path}")
+        return True
+
+    try:
+        Logger.info("VEnv", f"Creating virtual environment at {venv_path}")
+        venv_builder = venv.EnvBuilder(with_pip=True, upgrade_deps=True)
+        venv_builder.create(venv_path)
+        Logger.success("VEnv", f"Successfully created virtual environment at {venv_path}")
+        return True
+
+    except Exception as e:
+        Logger.error("VEnv", f"Failed to create virtual environment: {str(e)}")
+        return False
+
 
 # Template configuration structured definition
 TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
@@ -24,6 +46,7 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
         "params": [
             {"type": "text", "name": "project_name", "message": "What is your project named?", "default": "my-app"}
         ],
+        "hook": [hook_setup_virtualenv],
     },
     "nodejs": {
         "project": [
@@ -231,29 +254,41 @@ class ProjectCreator:
 
             for hook in hooks:
                 try:
-                    # Format variables in hook command if needed
-                    command = hook.format(**context)
-                    Logger.hook(command)
+                    if callable(hook):
+                        func_name = hook.__name__
+                        Logger.hook(f"Function: {func_name}")
 
-                    # Execute the hook command
-                    result = subprocess.run(command, shell=True, capture_output=True, text=True, check=False)
+                        result = hook(base_path, context)
 
-                    if result.returncode == 0:
-                        Logger.success("Hook", f"Command executed successfully: {command}")
-                        if result.stdout.strip():
-                            click.echo(result.stdout.strip())
+                        if result or result is None:
+                            Logger.success("Hook", f"Function executed successfully: {func_name}")
+                        else:
+                            Logger.error("Hook", f"Function failed: {func_name}")
+                            success = False
                     else:
-                        Logger.error("Hook", f"Command failed with exit code {result.returncode}: {command}")
-                        if result.stderr.strip():
-                            click.echo(result.stderr.strip())
-                        success = False
+                        command = hook.format(**context) if isinstance(hook, str) else str(hook)
+                        Logger.hook(command)
+
+                        # Execute the hook command
+                        result = subprocess.run(command, shell=True, capture_output=True, text=True, check=False)
+
+                        if result.returncode == 0:
+                            Logger.success("Hook", f"Command executed successfully: {command}")
+                            if result.stdout.strip():
+                                click.echo(result.stdout.strip())
+                        else:
+                            Logger.error("Hook", f"Command failed with exit code {result.returncode}: {command}")
+                            if result.stderr.strip():
+                                click.echo(result.stderr.strip())
+                            success = False
 
                 except KeyError as ke:
                     Logger.error("Hook", f"Missing required parameter {ke} for hook: {hook}")
                     success = False
                 except Exception as e:
-                    Logger.error("Hook", f"Failed to execute hook command: {hook} - {str(e)}")
+                    Logger.error("Hook", f"Failed to execute hook: {str(hook)} - {str(e)}")
                     success = False
+
         finally:
             # Restore original directory
             os.chdir(original_dir)
