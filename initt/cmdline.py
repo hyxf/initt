@@ -8,7 +8,7 @@ from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
 import questionary
 
-__VERSION__ = "0.0.3"
+__VERSION__ = "0.0.4"
 
 
 def hook_setup_virtualenv(base_path: str, context: dict):
