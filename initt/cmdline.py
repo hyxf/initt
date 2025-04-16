@@ -35,7 +35,7 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
         "params": [
             {"type": "text", "name": "project_name", "message": "What is your project named?", "default": "my-app"}
         ],
-        "hook": ["yarn install && yarn upgrade --latest && yarn start"],
+        "hook": ["yarn install", "yarn upgrade --latest", "yarn start"],
     },
     "swift": {
         "project": [
