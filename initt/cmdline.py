@@ -33,6 +33,14 @@ def hook_setup_virtualenv(base_path: str, context: dict):
         return False
 
 
+PROJECT_PARAMS: List[Dict[str, Any]] = [
+    {"type": "text", "name": "project_name", "message": "Project name:", "default": "my-app"},
+]
+
+VERSION_PARAMS: List[Dict[str, Any]] = [
+    {"type": "text", "name": "project_version", "message": "Version number:", "default": "0.0.1"},
+]
+
 # Template configuration structured definition
 TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
     "python": {
@@ -46,14 +54,14 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
             "requirements.txt",
         ],
         "params": [
-            {"type": "text", "name": "project_name", "message": "Project name:", "default": "my-app"},
+            *PROJECT_PARAMS,
             {
                 "type": "text",
                 "name": "project_description",
                 "message": "Project description:",
                 "default": "A simple Python CLI tool",
             },
-            {"type": "text", "name": "project_version", "message": "Version number:", "default": "0.0.1"},
+            *VERSION_PARAMS,
             {
                 "type": "text",
                 "name": "authors_name",
@@ -76,7 +84,10 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
             "src/index.ts",
             ".gitignore",
         ],
-        "params": [{"type": "text", "name": "project_name", "message": "Project name:", "default": "my-app"}],
+        "params": [
+            *PROJECT_PARAMS,
+            *VERSION_PARAMS,
+        ],
         "hook": ["yarn install", "yarn upgrade --latest", "yarn start"],
     },
     "swift": {
