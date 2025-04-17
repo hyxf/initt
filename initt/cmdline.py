@@ -5,6 +5,8 @@ from typing import Dict, List, Any, Union
 import venv
 import click
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
+import getpass
+
 
 import questionary
 
@@ -44,7 +46,26 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
             "requirements.txt",
         ],
         "params": [
-            {"type": "text", "name": "project_name", "message": "What is your project named?", "default": "my-app"}
+            {"type": "text", "name": "project_name", "message": "Project name:", "default": "my-app"},
+            {
+                "type": "text",
+                "name": "project_description",
+                "message": "Project description:",
+                "default": "A simple Python CLI tool",
+            },
+            {"type": "text", "name": "project_version", "message": "Version number:", "default": "0.0.1"},
+            {
+                "type": "text",
+                "name": "authors_name",
+                "message": "Author name:",
+                "default": getpass.getuser(),
+            },
+            {
+                "type": "text",
+                "name": "authors_email",
+                "message": "Author email:",
+                "default": "YOUREMAIL@gmail.com",
+            },
         ],
         "hook": [hook_setup_virtualenv],
     },
@@ -55,9 +76,7 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
             "src/index.ts",
             ".gitignore",
         ],
-        "params": [
-            {"type": "text", "name": "project_name", "message": "What is your project named?", "default": "my-app"}
-        ],
+        "params": [{"type": "text", "name": "project_name", "message": "Project name:", "default": "my-app"}],
         "hook": ["yarn install", "yarn upgrade --latest", "yarn start"],
     },
     "swift": {
