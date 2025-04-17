@@ -123,7 +123,7 @@ class Logger:
     """Logger class for unified log formatting and output"""
 
     ICONS = {
-        "cli": "🍊",
+        "cli": "🖥️",
         "info": "ℹ️",
         "success": "🎉",
         "warning": "⚠️",
