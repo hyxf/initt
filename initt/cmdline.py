@@ -89,7 +89,7 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
             *PROJECT_PARAMS,
             *VERSION_PARAMS,
         ],
-        "hook": ["yarn install", "yarn upgrade --latest", "yarn start"],
+        "hook": ["yarn install", "yarn add typescript tsx @types/node -D", "yarn start"],
     },
     "swift": {
         "project": [
