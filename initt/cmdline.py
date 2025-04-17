@@ -439,7 +439,7 @@ def wizard():
     """Create project interactively"""
     try:
         # Show version info
-        Logger.cli("Cli", f"Project Generator v{__VERSION__}")
+        Logger.cli("initt", f"Project Generator v{__VERSION__}")
 
         # Get project type
         available_templates = list(TEMPLATES.keys())
