@@ -123,6 +123,7 @@ class Logger:
     """Logger class for unified log formatting and output"""
 
     ICONS = {
+        "cli": "🍊",
         "info": "ℹ️",
         "success": "🎉",
         "warning": "⚠️",
@@ -142,6 +143,10 @@ class Logger:
     @classmethod
     def info(cls, label: str, message: str) -> None:
         cls.log("info", label, message)
+
+    @classmethod
+    def cli(cls, label: str, message: str) -> None:
+        cls.log("cli", label, message)
 
     @classmethod
     def success(cls, label: str, message: str) -> None:
@@ -433,7 +438,7 @@ def wizard():
     """Create project interactively"""
     try:
         # Show version info
-        Logger.info("Version", f"Project Generator v{__VERSION__}")
+        Logger.cli("Cli", f"Project Generator v{__VERSION__}")
 
         # Get project type
         available_templates = list(TEMPLATES.keys())
