@@ -83,6 +83,7 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
             "package.json",
             "src/index.ts",
             ".gitignore",
+            "README.md",
         ],
         "params": [
             *PROJECT_PARAMS,
