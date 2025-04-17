@@ -74,6 +74,9 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
                 "message": "Author email:",
                 "default": "YOUREMAIL@gmail.com",
             },
+            {"type": "confirm", "name": "use_requests", "message": "Support requests:", "default": False},
+            {"type": "confirm", "name": "use_tqdm", "message": "Support tqdm:", "default": False},
+            {"type": "confirm", "name": "use_pydantic", "message": "Support pydantic:", "default": False},
         ],
         "hook": [hook_setup_virtualenv],
     },
@@ -188,7 +191,7 @@ class TemplateRenderer:
         else:
             raise FileNotFoundError(f"Cannot find template directory: {template}")
 
-        return Environment(loader=FileSystemLoader(template_dir))
+        return Environment(loader=FileSystemLoader(template_dir), trim_blocks=False, lstrip_blocks=False)
 
     @staticmethod
     def render_template(env: Environment, template_name: str, context: dict) -> str:

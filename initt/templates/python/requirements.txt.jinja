@@ -1,2 +1,13 @@
 click
 types-click
+{% if use_requests -%}
+requests
+types-requests
+{%- endif %}
+{% if use_tqdm -%}
+tqdm
+types-tqdm
+{%- endif %}
+{% if use_pydantic -%}
+pydantic
+{%- endif %}
