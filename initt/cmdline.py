@@ -10,7 +10,7 @@ import getpass
 
 import questionary
 
-__VERSION__ = "0.0.5"
+__VERSION__ = "0.0.6"
 
 
 def hook_setup_virtualenv(base_path: str, context: dict):
@@ -34,7 +34,12 @@ def hook_setup_virtualenv(base_path: str, context: dict):
 
 
 PROJECT_PARAMS: List[Dict[str, Any]] = [
-    {"type": "text", "name": "project_name", "message": "Project name:", "default": "my-app"},
+    {
+        "type": "text",
+        "name": "project_name",
+        "message": "Project name:",
+        "default": os.path.basename(os.getcwd()).lower(),
+    },
 ]
 
 VERSION_PARAMS: List[Dict[str, Any]] = [
