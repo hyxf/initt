@@ -10,7 +10,7 @@ import getpass
 
 import questionary
 
-__VERSION__ = "0.0.8"
+__VERSION__ = "0.0.9"
 
 
 def hook_setup_virtualenv(base_path: str, context: dict):
