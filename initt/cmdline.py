@@ -13,6 +13,31 @@ import questionary
 __VERSION__ = "0.0.9"
 
 
+def hook_git_init(base_path: str, context: dict):
+    if not context.get("use_git_init", False):
+        return False
+
+    Logger.info("Git", "Initializing git project")
+
+    git_dir = os.path.join(base_path, ".git")
+    if os.path.exists(git_dir):
+        Logger.info("Git", "Git project already initialized")
+        return True
+
+    try:
+        subprocess.check_call(["git", "init"], cwd=base_path)
+        Logger.success("Git", "Git repository initialized")
+
+        subprocess.check_call(["git", "add", "."], cwd=base_path)
+        subprocess.check_call(["git", "commit", "-m", "Initial commit"], cwd=base_path)
+        Logger.success("Git", "Initial commit created")
+        return True
+
+    except Exception as e:
+        Logger.error("Git", f"Git initialization failed: {str(e)}")
+        return False
+
+
 def hook_setup_virtualenv(base_path: str, context: dict):
     Logger.info("VEnv", f"Setting up virtual environment at {base_path}")
 
@@ -75,6 +100,10 @@ VERSION_PARAMS: List[Dict[str, Any]] = [
     {"type": "text", "name": "project_version", "message": "Version number:", "default": "0.0.1"},
 ]
 
+GIT_PARAMS: List[Dict[str, Any]] = [
+    {"type": "confirm", "name": "use_git_init", "message": "Create Git repository:", "default": False},
+]
+
 # Template configuration structured definition
 TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
     "python": {
@@ -115,8 +144,9 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
             {"type": "confirm", "name": "use_tqdm", "message": "Support tqdm:", "default": False},
             {"type": "confirm", "name": "use_pydantic", "message": "Support pydantic:", "default": False},
             {"type": "confirm", "name": "use_install", "message": "Exec install:", "default": True},
+            *GIT_PARAMS,
         ],
-        "hook": [hook_setup_virtualenv],
+        "hook": [hook_setup_virtualenv, hook_git_init],
     },
     "nodejs": {
         "project": [
@@ -132,8 +162,9 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
         "params": [
             *PROJECT_PARAMS,
             *VERSION_PARAMS,
+            *GIT_PARAMS,
         ],
-        "hook": ["yarn install", "yarn add typescript tsx @types/node -D", "yarn start"],
+        "hook": ["yarn install", "yarn add typescript tsx @types/node -D", "yarn start", hook_git_init],
     },
     "swift": {
         "project": [
