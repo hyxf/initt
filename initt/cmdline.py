@@ -26,6 +26,23 @@ def hook_setup_virtualenv(base_path: str, context: dict):
         venv_builder = venv.EnvBuilder(with_pip=True, upgrade_deps=True)
         venv_builder.create(venv_path)
         Logger.success("VEnv", f"Successfully created virtual environment at {venv_path}")
+
+        if context.get("use_install", False):
+            req_path = os.path.join(base_path, "requirements.txt")
+            if not os.path.exists(req_path):
+                Logger.warning("VEnv", f"requirements.txt not found at {req_path}, skipping install.")
+                return True
+
+            pip_executable = (
+                os.path.join(venv_path, "Scripts", "pip.exe")
+                if sys.platform == "win32"
+                else os.path.join(venv_path, "bin", "pip")
+            )
+
+            Logger.info("VEnv", f"Installing dependencies from {req_path}...")
+            subprocess.check_call([pip_executable, "install", "-r", req_path])
+            Logger.success("VEnv", f"Dependencies installed from {req_path}")
+
         return True
 
     except Exception as e:
@@ -94,6 +111,7 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
             {"type": "confirm", "name": "use_requests", "message": "Support requests:", "default": False},
             {"type": "confirm", "name": "use_tqdm", "message": "Support tqdm:", "default": False},
             {"type": "confirm", "name": "use_pydantic", "message": "Support pydantic:", "default": False},
+            {"type": "confirm", "name": "use_install", "message": "Exec install:", "default": True},
         ],
         "hook": [hook_setup_virtualenv],
     },
