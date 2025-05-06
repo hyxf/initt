@@ -86,6 +86,9 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
             "pyproject.toml",
             "README.md",
             "requirements.txt",
+            ".vscode/launch.json",
+            ".vscode/extensions.json",
+            ".vscode/settings.json",
         ],
         "params": [
             *PROJECT_PARAMS,
