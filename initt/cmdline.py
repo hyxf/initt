@@ -33,6 +33,18 @@ def hook_setup_virtualenv(base_path: str, context: dict):
         return False
 
 
+def get_git_email(default: str = "YOUREMAIL@gmail.com") -> str:
+    try:
+        value = (
+            subprocess.check_output(["git", "config", "--global", "user.email"], stderr=subprocess.DEVNULL)
+            .decode("utf-8")
+            .strip()
+        )
+        return value if value else default
+    except subprocess.CalledProcessError:
+        return default
+
+
 PROJECT_PARAMS: List[Dict[str, Any]] = [
     {
         "type": "text",
@@ -77,7 +89,7 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
                 "type": "text",
                 "name": "authors_email",
                 "message": "Author email:",
-                "default": "YOUREMAIL@gmail.com",
+                "default": get_git_email(),
             },
             {"type": "confirm", "name": "use_requests", "message": "Support requests:", "default": False},
             {"type": "confirm", "name": "use_tqdm", "message": "Support tqdm:", "default": False},
