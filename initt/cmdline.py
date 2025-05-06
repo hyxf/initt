@@ -125,6 +125,9 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
             "src/index.ts",
             ".gitignore",
             "README.md",
+            ".vscode/extensions.json",
+            ".vscode/launch.json",
+            ".vscode/settings.json",
         ],
         "params": [
             *PROJECT_PARAMS,
