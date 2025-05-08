@@ -13,7 +13,7 @@ import questionary
 __VERSION__ = "0.0.10"
 
 
-def hook_git_init(base_path: str, context: dict):
+def hook_git_init(base_path: str, context: dict) -> bool:
     if not context.get("use_git_init", False):
         return False
 
@@ -38,7 +38,7 @@ def hook_git_init(base_path: str, context: dict):
         return False
 
 
-def hook_setup_virtualenv(base_path: str, context: dict):
+def hook_setup_virtualenv(base_path: str, context: dict) -> bool:
     Logger.info("VEnv", f"Setting up virtual environment at {base_path}")
 
     venv_path = os.path.join(base_path, ".venv")
