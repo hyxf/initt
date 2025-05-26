@@ -10,7 +10,7 @@ import getpass
 
 import questionary
 
-__VERSION__ = "0.0.10"
+__VERSION__ = "0.0.15"
 
 
 def hook_git_init(base_path: str, context: dict) -> bool:
