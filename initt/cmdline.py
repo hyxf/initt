@@ -10,7 +10,7 @@ import getpass
 
 import questionary
 
-__VERSION__ = "0.0.15"
+__VERSION__ = "0.0.18"
 
 
 def hook_git_init(base_path: str, context: dict) -> bool:
@@ -190,6 +190,19 @@ TEMPLATES: Dict[str, Dict[str, Union[List[str], List[Dict[str, Any]]]]] = {
             "ui/component",
             "ui/navigation",
             "di",
+        ]
+    },
+    "spring": {
+        "project": [
+            "controller",  # 接口层（Rest API）
+            "service",  # 业务逻辑层
+            "service/impl",  # 业务实现层
+            "repository",  # 持久层（DAO、JPA、MyBatis Mapper）
+            "entity",  # 实体层（数据库表映射）
+            "dto",  # 请求/响应对象（VO、DTO）
+            "config",  # 配置类（Spring Security, CORS, Swagger 等）
+            "exception",  # 自定义异常处理
+            "utils",  # 工具类
         ]
     },
 }
